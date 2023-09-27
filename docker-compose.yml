@@ -9,7 +9,12 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
+      NODE_ENV: development
+      POSTGRES_DB: brm-database
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_HOST: postgres-db
+      DIALECT: postgres
     command: tail -f /dev/null
     depends_on:
       - db
