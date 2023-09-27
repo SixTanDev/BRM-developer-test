@@ -10,19 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-        with:
-          path: 'app'
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Install Node.js and Yarn
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20.7.0'
-          cache: 'yarn'
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
 
-      - name: Install dependencies
-        run: cd app && yarn install
+    - name: Install dependencies
+      run: yarn --cwd app # Install dependencies in the 'app' directory
 
-      - name: Run tests
-        run: cd app && yarn test
+    - name: Run Tests
+      run: yarn --cwd app test # Run the test commands in the 'app' directory
