@@ -1,8 +1,9 @@
-const express = require('express');
-const router  = express.Router();
+const express = require("express");
+const router = express.Router();
 
-module.exports = () => {
+const usersRoute = require("./users");
 
+module.exports = (params) => {
   /**
    * @api {get} / Get server status
    * @apiName GetStatus
@@ -16,9 +17,11 @@ module.exports = () => {
    *       "message": "Server is up and running"
    *     }
    */
-  router.get('/', (req, res) => {
+  router.get("/", (req, res) => {
     res.status(200).json("Server is up and running");
   });
+
+  router.use("/user", usersRoute(params.userService));
 
   return router;
 };
