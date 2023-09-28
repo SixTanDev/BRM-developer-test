@@ -25,7 +25,7 @@ module.exports = (params) => {
   });
 
   router.use("/user", usersRoute(params.userService));
-  router.use("/product", productRoute(params.productService));
+  router.use("/product", productRoute(params.productService, params.orderService, params.userService));
   router.use("/view", viewProductRoute(params.productService))
   router.use("/buy", orderRoute(params.orderService, params.productService))
 
