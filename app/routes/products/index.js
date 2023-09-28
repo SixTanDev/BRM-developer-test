@@ -138,5 +138,50 @@ module.exports = (productService) => {
     }
   });
 
+
+  /**
+   * @api {get} /myproducts Get a list of the user's products
+   * @apiName GetUserProducts
+   * @apiGroup Product
+   *
+   * @apiSuccess {Array} myProducts List of user's products.
+   * @apiSuccess {Object} myProducts.product Product details.
+   *
+   * @apiSuccessExample Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "myProducts": [
+   *         {
+   *           "product": {
+   *             // Product details here
+   *           }
+   *         },
+   *         // Additional user's products here
+   *       ]
+   *     }
+   *
+   * @apiError {Number} status_code HTTP status code indicating the error.
+   * @apiError {String} message Error message.
+   *
+   * @apiErrorExample Error-Response:
+   *     HTTP/1.1 500 Internal Server Error
+   *     {
+   *       "status_code": 500,
+   *       "message": "Internal server error"
+   *     }
+   */
+  router.get("/myproducts", async (req, res) => {
+    try {
+      const user = req.user;
+
+      const allMyProducts = await productService.readProducts({user_id: user.id});
+      res.status(200).send({
+        myProducts: allMyProducts,
+      });
+    } catch (err) {
+      res.status(err.status_code).send(err);
+    }
+  });
+
   return router;
 };
