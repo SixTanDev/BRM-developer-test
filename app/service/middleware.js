@@ -53,7 +53,7 @@ function accessResource(req, res, next) {
         detail: "Access only for administrator",
       });
     }
-    req.user = decoded;
+    req.user = decoded.user[0];
     next();
   });
 }
