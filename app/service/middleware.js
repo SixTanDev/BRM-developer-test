@@ -58,8 +58,36 @@ function accessResource(req, res, next) {
   });
 }
 
+/**
+ * This middleware function is used to decode and verify an authentication token
+ * provided in the request headers.
+ * @param {object} req - The Express request object.
+ * @param {object} res - The Express response object.
+ * @param {function} next - The next middleware function in the Express middleware chain.
+ */
+function decodeToken(req, res, next) {
+  const token = req.headers.token;
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ message: "An authentication token was not provided" });
+  }
+
+  jwt.verify(token, bcryptSaltToken, (err, decoded) => {
+    console.log(err, decoded);
+    if (err) {
+      return res.status(401).json({ message: "Invalid authentication token" });
+    }
+
+    req.user = decoded.user[0];
+    next();
+  });
+}
+
 module.exports = {
   attachBcryptSaltPassword,
   attachBcryptSaltToken,
   accessResource,
+  decodeToken,
 };

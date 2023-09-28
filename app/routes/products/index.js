@@ -9,8 +9,7 @@ const router = express.Router();
 router.use(attachBcryptSaltPassword);
 router.use(accessResource);
 
-module.exports = (productService) => {
-
+module.exports = (productService, orderService, userService) => {
   /**
    * @api {post} /register Create a new product
    * @apiName CreateProduct
@@ -138,7 +137,6 @@ module.exports = (productService) => {
     }
   });
 
-
   /**
    * @api {get} /myproducts Get a list of the user's products
    * @apiName GetUserProducts
@@ -174,9 +172,90 @@ module.exports = (productService) => {
     try {
       const user = req.user;
 
-      const allMyProducts = await productService.readProducts({user_id: user.id});
+      const allMyProducts = await productService.readProducts({
+        user_id: user.id,
+      });
       res.status(200).send({
         myProducts: allMyProducts,
+      });
+    } catch (err) {
+      res.status(err.status_code).send(err);
+    }
+  });
+
+  /**
+   * @api {get} /purchases Obtener todas las compras del vendedor
+   * @apiName ObtenerCompras
+   * @apiGroup Compras
+   *
+   * @apiDescription Esta ruta permite a un vendedor obtener todas sus compras realizadas por diferentes compradores.
+   *
+   * @apiHeader {String} Authorization Token de autorización del usuario (Bearer token).
+   *
+   * @apiSuccess {Object[]} myOrder Lista de compras del vendedor.
+   * @apiSuccess {Date} myOrder.createdAt Fecha y hora de creación de la compra.
+   * @apiSuccess {String} myOrder.clienteName Nombre completo del comprador.
+   * @apiSuccess {Number} myOrder.purchasedProducts Cantidad de productos comprados.
+   * @apiSuccess {Number} myOrder.totalPrice Precio total de la compra.
+   *
+   * @apiSuccessExample Respuesta Exitosa:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "myOrder": [
+   *         {
+   *           "createdAt": "2023-09-28T10:00:00Z",
+   *           "clienteName": "Juan Pérez",
+   *           "purchasedProducts": 3,
+   *           "totalPrice": 150.00
+   *         },
+   *         {
+   *           "createdAt": "2023-09-27T15:30:00Z",
+   *           "clienteName": "Ana García",
+   *           "purchasedProducts": 2,
+   *           "totalPrice": 90.00
+   *         }
+   *       ]
+   *     }
+   *
+   * @apiErrorExample Error en la autenticación:
+   *     HTTP/1.1 401 Unauthorized
+   *     {
+   *       "error": "Unauthorized"
+   *     }
+   *
+   * @apiErrorExample Error interno del servidor:
+   *     HTTP/1.1 500 Internal Server Error
+   *     {
+   *       "error": "Error interno del servidor"
+   *     }
+   */
+  router.get("/purchases", async (req, res) => {
+    try {
+      const user = req.user;
+
+      const allMyOrder = await orderService.readOrder({
+        seller_id: user.id,
+      });
+
+      const uniqueBuyerIds = [...new Set(allMyOrder.map(order => order.buyer_id))];
+      const buyerNamesMap = {};
+
+      await Promise.all(uniqueBuyerIds.map(async (buyerId) => {
+        const user = await userService.filterUsers({ id: buyerId} );
+        if (user.length > 0) {
+          buyerNamesMap[buyerId] = `${user[0].dataValues.name} ${user[0].dataValues.lastName}`;
+        }
+      }));
+
+      const formattedData = allMyOrder.map(order => ({
+        createdAt: order.createdAt,
+        clienteName: buyerNamesMap[order.buyer_id],
+        purchasedProducts: order.quantityProduct,
+        totalPrice: order.totalPrice,
+      }));
+
+      res.status(200).send({
+        myOrder: formattedData,
       });
     } catch (err) {
       res.status(err.status_code).send(err);
