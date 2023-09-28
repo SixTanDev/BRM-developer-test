@@ -31,6 +31,30 @@ class OrderService {
       }
     }
   }
+
+  /**
+   * Reads one or all order based on the specified criteria.
+   * @param {Object} filterCriteria - Criteria for reading order.
+   * @throws {Object} An error object in case of failure.
+   * @returns {Promise<Object>} A promise that resolves with the order(s).
+   */
+  async readOrder(filterCriteria = {}) {
+    try {
+      const order = await Order.findAll({
+        where: filterCriteria,
+      });
+
+      return order;
+    } catch (error) {
+      throw {
+        message: "Internal server error",
+        data: filterCriteria,
+        severity: "High priority",
+        status_code: 500,
+        info_dev: error,
+      };
+    }
+  }
 }
 
 module.exports = OrderService;
