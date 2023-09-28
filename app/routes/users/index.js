@@ -65,6 +65,9 @@ module.exports = (userService) => {
       const userData = req.body;
       const bcryptSalt = req.bcryptSaltPasawword;
 
+      userData.name = userData.name.toLowerCase();
+      userData.lastName = userData.lastName.toLowerCase();
+      userData.email = userData.email.toLowerCase();
       try {
         userData.password = bcrypt.hashSync(userData.password, bcryptSalt);
       } catch (hashError) {
