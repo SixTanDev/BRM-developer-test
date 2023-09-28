@@ -15,7 +15,7 @@ module.exports = (orderService, productService) => {
     try {
       const orderData = req.body;
       const user = req.user;
-      const product = await productService.readProducts({lotNumber: orderData.lotNumber});
+      const product = await productService.readProducts({id: orderData.product_id});
       const dataValuesProducto = product[0].dataValues
 
       const produictAvaible = (+dataValuesProducto.availableQTY) - (+orderData.quantityProduct)
@@ -29,6 +29,7 @@ module.exports = (orderService, productService) => {
       }
 
       orderData.buyer_id = user.id
+      orderData.lotNumber = dataValuesProducto.lotNumber
       orderData.totalPrice = (+dataValuesProducto.price) * (+orderData.quantityProduct)
 
       await productService.updateProduct({ id: dataValuesProducto.id }, {availableQTY: produictAvaible})
