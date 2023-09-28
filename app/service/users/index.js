@@ -56,16 +56,6 @@ class UserService {
         where: filterCriteria,
       });
 
-      if (filteredUsers.length === 0) {
-        const err = {
-          message: "Users o User not found",
-          detail: "No users match the specified criteria",
-          severity: "error",
-          status_code: 404,
-        };
-        throw err;
-      }
-
       return filteredUsers;
     } catch (error) {
       if (
