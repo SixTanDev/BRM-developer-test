@@ -123,20 +123,30 @@ module.exports = (userService) => {
    */
   router.post("/login", async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const userData = req.body;
       const bcryptSalt = req.bcryptSaltToken;
 
-      const user = await userService.filterUsers({ email });
+      userData.email = userData.email.toLowerCase();
+      const user = await userService.filterUsers({ email: userData.email });
 
-      console.log(user[0].dataValues);
-      const passOk = bcrypt.compareSync(password, user[0].dataValues.password);
-
-      if (passOk) {
-        const token = jwt.sign({ user: user }, bcryptSalt);
-
-        res.status(200).json({ token: token });
+      if (user.length === 0) {
+        const err = {
+          message: "Users o User not found",
+          detail: "No users match the specified criteria",
+          severity: "error",
+          status_code: 404,
+        };
+        res.status(err.status_code).json({ err });
       } else {
-        res.status(401).json({ error: "Credenciales incorrectas" });
+        const passOk = bcrypt.compareSync(userData.password, user[0].dataValues.password);
+
+        if (passOk) {
+          const token = jwt.sign({ user: user }, bcryptSalt);
+
+          res.status(200).json({ token: token });
+        } else {
+          res.status(401).json({ error: "Credenciales incorrectas" });
+        }
       }
     } catch (err) {
       res.status(err.status_code).json(err);
