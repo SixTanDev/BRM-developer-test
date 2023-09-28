@@ -40,6 +40,9 @@ module.exports = (productService, orderService, userService) => {
   router.post("/register", async (req, res) => {
     try {
       const productData = req.body;
+      const user = req.user
+
+      productData.user_id = user.id
 
       const product = await productService.createProduct(productData);
       res.status(200).send({
