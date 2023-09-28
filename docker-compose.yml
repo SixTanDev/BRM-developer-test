@@ -15,7 +15,12 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_HOST: postgres-db
       DIALECT: postgres
-    command: tail -f /dev/null
+    command:
+      - /bin/sh
+      - -c
+      - |
+        yarn install
+        yarn run start
     depends_on:
       - db
 
