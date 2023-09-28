@@ -3,6 +3,7 @@ const router = express.Router();
 
 const usersRoute = require("./users");
 const productRoute = require("./products")
+const viewProductRoute = require("./views")
 
 module.exports = (params) => {
   /**
@@ -24,6 +25,7 @@ module.exports = (params) => {
 
   router.use("/user", usersRoute(params.userService));
   router.use("/product", productRoute(params.productService));
+  router.use("/view", viewProductRoute(params.productService))
 
   return router;
 };
