@@ -57,7 +57,6 @@ Open your web browser and visit the following URL:
 
 #### Connect to PgAdmin:
 You can access the PgAdmin server to manage the database. Use the following information for the connection:
-
 URL: [http://localhost:pgadmin/](http://127.0.0.1:5050/browser/)
 Credentials for enter pgadmin: correo: admin@macroferia.com, contraseña: admin
 
@@ -65,6 +64,9 @@ Then, REGISTER NEW SERVER
 In name: You can name it whatever you want
 Then in the connection tab in the **host** part: `postgres-db` (the name of the postgresSQL container)
 **user: admin, password: admin**
+
+# Test Endpoint via Postman:
+URL: [Test End-point](https://elements.getpostman.com/redirect?entityId=25596787-b63026ce-7426-45e3-a3bd-d42cc21465fd&entityType=collection)
 
 ## Descripción de los endpoint:
 
